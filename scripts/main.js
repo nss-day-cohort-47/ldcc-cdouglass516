@@ -28,7 +28,7 @@ applicationElement.addEventListener("click", event => {
 			.then(dbUserObj => {
 				if (dbUserObj) {
 					sessionStorage.setItem("user", JSON.stringify(dbUserObj));
-					startLDSnacks();
+					startLDSnacks(dbUserObj.admin);
 				} else {
 					//got a false value - no user
 					const entryElement = document.querySelector(".entryForm");
@@ -39,12 +39,13 @@ applicationElement.addEventListener("click", event => {
 		//collect all the details into an object
 		const userObject = {
 			name: document.querySelector("input[name='registerName']").value,
-			email: document.querySelector("input[name='registerEmail']").value
+			email: document.querySelector("input[name='registerEmail']").value,
+			admin: false
 		}
 		registerUser(userObject)
 			.then(dbUserObj => {
 				sessionStorage.setItem("user", JSON.stringify(dbUserObj));
-				startLDSnacks();
+				startLDSnacks(dbUserObj.admin);
 			})
 	}
 })
@@ -86,8 +87,18 @@ const showDetails = (snackObj) => {
 
 const checkForUser = () => {
 	if (sessionStorage.getItem("user")) {
-		setLoggedInUser(JSON.parse(sessionStorage.getItem("user")));
-		startLDSnacks();
+		let userObj = JSON.parse(sessionStorage.getItem("user"));
+		loginUser(userObj)
+		.then(dbUserObj => {
+			if (dbUserObj) {
+				sessionStorage.setItem("user", JSON.stringify(dbUserObj));
+				startLDSnacks(dbUserObj.admin);
+			} else {
+				//got a false value - no user
+				const entryElement = document.querySelector(".entryForm");
+				entryElement.innerHTML = `<p class="center">That user does not exist. Please try again or register for your free account.</p> ${LoginForm()} <hr/> <hr/> ${RegisterForm()}`;
+			}
+		})
 	} else {
 		applicationElement.innerHTML = "";
 		//show login/register
@@ -101,8 +112,8 @@ const showLoginRegister = () => {
 	applicationElement.innerHTML += `${LoginForm()} <hr/> <hr/> ${RegisterForm()}`;
 }
 
-const showNavBar = () => {
-	applicationElement.innerHTML += NavBar();
+const showNavBar = (isAdmin) => {
+	applicationElement.innerHTML += NavBar(isAdmin);
 }
 
 const showSnackList = () => {
@@ -116,9 +127,9 @@ const showFooter = () => {
 	applicationElement.innerHTML += Footer();
 }
 
-const startLDSnacks = () => {
+const startLDSnacks = (isAdmin) => {
 	applicationElement.innerHTML = "";
-	showNavBar();
+	showNavBar(isAdmin);
 	applicationElement.innerHTML += `<div id="mainContent"></div>`;
 	showSnackList();
 	showFooter();
