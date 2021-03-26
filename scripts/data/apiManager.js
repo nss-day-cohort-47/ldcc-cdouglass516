@@ -69,56 +69,25 @@ export const getSnacks = () => {
 }
 
 export const getSingleSnack = (snackId) => {
-	return fetch(`${apiURL}/snacks/${snackId}`)
+	return fetch(`${apiURL}/snacks/${snackId}?_expand=type&_expand=shape&_expand=season&_expand=inFlavor`)
 	.then(function(response) {
 		return response.json();}).then(function(data) {
 		snackDetail = data;
-		return fetch(`${apiURL}/types/${data.typeId}`); // make a 2nd request and return a promise
-	  }).then(function(response) {
-		return response.json();
-	  }).then(function(data) {
-		snackDetail.type = data;
-		return fetch(`${apiURL}/seasons/${snackDetail.seasonId}`); // make a 2nd request and return a promise
-	  })
-	  .then(function(response) {
-		return response.json();
-	  }).then(function(data) {
-		snackDetail.season = data;
-		return fetch(`${apiURL}/shapes/${snackDetail.shapeId}`); // make a 2nd request and return a promise
-	  }).then(function(response) {
-		return response.json();
-	  }).then(function(data) {
-		snackDetail.shape = data;
-		return fetch(`${apiURL}/inFlavors/${snackDetail.inFlavorId}`); // make a 2nd request and return a promise
-	}).then(function(response) {
-		return response.json();
-	  }).then(function(data) {
-		snackDetail.inFlavor = data;
-		return fetch(`${apiURL}/snackToppings?snackId=${snackDetail.id}`); // make a 2nd request and return a promise
+		return fetch(`${apiURL}/snackToppings/?snackId=${snackDetail.id}&_expand=topping`); // make a 2nd request and return a promise
 	}).then(function(response) {
 		return response.json();
 	  })
 	  .then(function(data) {
-		  let qs = "";
+		  let toppings = "";
         data.forEach((item,index) =>{
 			if(item.snackId == snackDetail.id){
-				qs += `id=${item.toppingId}`;
-				if(index + 1 !== data.length){
-					qs += `&`;
-				}
+				toppings += ` ${item.topping.name}`
+				if((index + 1)!== data.length) toppings += ',';
 			}
 		})
-		return fetch(`${apiURL}/toppings?${qs}`); // make a 2nd request and return a promise
-	}).then(function(response) {
-		return response.json();
-	  }).then(function(data) {
-		snackDetail.toppings = "";
-		data.forEach(item =>{
-			snackDetail.toppings += `-${item.name}- `
-		})  
-
+		snackDetail.toppings = toppings;
 		return snackDetail; // make a 2nd request and return a promise
-	  })
+	})
 	  .catch(function(error) {
 		console.log('Request failed', error)
 	  })
