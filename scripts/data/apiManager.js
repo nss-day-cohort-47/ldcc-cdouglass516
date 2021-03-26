@@ -70,26 +70,26 @@ export const getSnacks = () => {
 
 export const getSingleSnack = (snackId) => {
 	return fetch(`${apiURL}/snacks/${snackId}?_expand=type&_expand=shape&_expand=season&_expand=inFlavor`)
-	.then(function(response) {
-		return response.json();}).then(function(data) {
-		snackDetail = data;
-		return fetch(`${apiURL}/snackToppings/?snackId=${snackDetail.id}&_expand=topping`); // make a 2nd request and return a promise
-	}).then(function(response) {
-		return response.json();
-	  })
-	  .then(function(data) {
-		  let toppings = "";
-        data.forEach((item,index) =>{
-			if(item.snackId == snackDetail.id){
-				toppings += ` ${item.topping.name}`
-				if((index + 1)!== data.length) toppings += ',';
-			}
+		.then(function (response) {
+			return response.json();
+		}).then(function (data) {
+			snackDetail = data;
+			return fetch(`${apiURL}/snackToppings/?snackId=${snackDetail.id}&_expand=topping`); // make a 2nd request and return a promise
+		}).then(function (response) {
+			return response.json();
 		})
-		snackDetail.toppings = toppings;
-		return snackDetail; // make a 2nd request and return a promise
-	})
-	  .catch(function(error) {
-		console.log('Request failed', error)
-	  })
-
+		.then(function (data) {
+			let toppings = "";
+			data.forEach((item, index) => {
+				if (item.snackId == snackDetail.id) {
+					toppings += ` ${item.topping.name}`
+					if ((index + 1) !== data.length) toppings += ',';
+				}
+			})
+			snackDetail.toppings = toppings;
+			return snackDetail; // make a 2nd request and return a promise
+		})
+		.catch(function (error) {
+			console.log('Request failed', error)
+		})
 }
