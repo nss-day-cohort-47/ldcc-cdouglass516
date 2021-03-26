@@ -2,6 +2,7 @@ const apiURL = "http://localhost:8088";
 
 //// user functions
 let loggedInUser = {}
+let snackDetail = {}
 
 export const getLoggedInUser = () => {
 	return { ...loggedInUser };
@@ -69,5 +70,57 @@ export const getSnacks = () => {
 
 export const getSingleSnack = (snackId) => {
 	return fetch(`${apiURL}/snacks/${snackId}`)
-	.then(response => response.json())
+	.then(function(response) {
+		return response.json();}).then(function(data) {
+		snackDetail = data;
+		return fetch(`${apiURL}/types/${data.typeId}`); // make a 2nd request and return a promise
+	  }).then(function(response) {
+		return response.json();
+	  }).then(function(data) {
+		snackDetail.type = data;
+		return fetch(`${apiURL}/seasons/${snackDetail.seasonId}`); // make a 2nd request and return a promise
+	  })
+	  .then(function(response) {
+		return response.json();
+	  }).then(function(data) {
+		snackDetail.season = data;
+		return fetch(`${apiURL}/shapes/${snackDetail.shapeId}`); // make a 2nd request and return a promise
+	  }).then(function(response) {
+		return response.json();
+	  }).then(function(data) {
+		snackDetail.shape = data;
+		return fetch(`${apiURL}/inFlavors/${snackDetail.inFlavorId}`); // make a 2nd request and return a promise
+	}).then(function(response) {
+		return response.json();
+	  }).then(function(data) {
+		snackDetail.inFlavor = data;
+		return fetch(`${apiURL}/snackToppings?snackId=${snackDetail.id}`); // make a 2nd request and return a promise
+	}).then(function(response) {
+		return response.json();
+	  })
+	  .then(function(data) {
+		  let qs = "";
+        data.forEach((item,index) =>{
+			if(item.snackId == snackDetail.id){
+				qs += `id=${item.toppingId}`;
+				if(index + 1 !== data.length){
+					qs += `&`;
+				}
+			}
+		})
+		return fetch(`${apiURL}/toppings?${qs}`); // make a 2nd request and return a promise
+	}).then(function(response) {
+		return response.json();
+	  }).then(function(data) {
+		snackDetail.toppings = "";
+		data.forEach(item =>{
+			snackDetail.toppings += `-${item.name}- `
+		})  
+
+		return snackDetail; // make a 2nd request and return a promise
+	  })
+	  .catch(function(error) {
+		console.log('Request failed', error)
+	  })
+
 }
