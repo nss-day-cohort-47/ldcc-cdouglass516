@@ -8,7 +8,7 @@ import { SnackDetails } from "./snacks/SnackDetails.js";
 import { Footer } from "./nav/Footer.js";
 import {
 	logoutUser, setLoggedInUser, loginUser, registerUser, getLoggedInUser,
-	getSnacks, getSingleSnack
+	getSnacks, getSingleSnack, getToppings
 } from "./data/apiManager.js";
 
 
@@ -72,6 +72,15 @@ applicationElement.addEventListener("click", event => {
 	}
 })
 
+document.getElementById("nav_div").addEventListener("change", event => {
+	event.preventDefault();
+	if (event.target.id === "select_topping") {
+		var e = document.getElementById("select_topping");
+		var toppingId = e.options[e.selectedIndex].value;
+		showSnackList(toppingId);
+	}
+})
+
 applicationElement.addEventListener("click", event => {
 	event.preventDefault();
 	if (event.target.id === "allSnacks") {
@@ -113,14 +122,33 @@ const showLoginRegister = () => {
 }
 
 const showNavBar = (isAdmin) => {
-	applicationElement.innerHTML += NavBar(isAdmin);
+	getToppings() //get array of toppings
+	.then(toppings =>{
+		document.querySelector("#nav_div").innerHTML = NavBar(isAdmin,toppings);
+		var select = document.getElementById("select_topping");
+		var opt = new Option('Select a topping', 0);
+		select.options[select.options.length] = opt;
+		for(let index in toppings) {
+		let newIndex = Number(index) + 1	
+		select.options[select.options.length] = new Option(toppings[index], newIndex);
+
+	}
+	})
 }
 
-const showSnackList = () => {
-	getSnacks().then(allSnacks => {
-		const listElement = document.querySelector("#mainContent")
-		listElement.innerHTML = SnackList(allSnacks);
-	})
+const showSnackList = (toppingId) => {
+	if (toppingId) {
+		getSnacks(toppingId).then(allSnacks => {
+			const listElement = document.querySelector("#mainContent")
+			listElement.innerHTML = SnackList(allSnacks);
+		})
+	} else {
+		getSnacks().then(allSnacks => {
+			const listElement = document.querySelector("#mainContent")
+			listElement.innerHTML = SnackList(allSnacks);
+		})
+	}
+
 }
 
 const showFooter = () => {

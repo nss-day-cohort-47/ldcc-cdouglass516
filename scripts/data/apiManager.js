@@ -46,6 +46,13 @@ export const registerUser = (userObj) => {
 		})
 }
 
+export const getToppings = () =>{
+	return fetch(`${apiURL}/toppings`)
+		.then(response => response.json())
+		.then(toppings => {
+			return toppings.map(a => a.name);
+		})
+}
 
 ///// snack functions
 
@@ -59,13 +66,25 @@ export const useSnackCollection = () => {
   return snackCollectionCopy;
 }
 
-export const getSnacks = () => {
-	return fetch(`${apiURL}/snacks`)
+export const getSnacks = (toppingId) => {
+	if (toppingId) {
+		return fetch(`${apiURL}/snackToppings/?toppingId=${toppingId}&_expand=snack`)
 		.then(response => response.json())
 		.then(parsedResponse => {
-			snackCollection = parsedResponse
-			return parsedResponse;
+			let snackByTopping = []
+			parsedResponse.forEach(item =>{
+				snackByTopping.push(item.snack)
+			})
+			return snackByTopping;
 		})
+	} else {
+		return fetch(`${apiURL}/snacks`)
+			.then(response => response.json())
+			.then(parsedResponse => {
+				snackCollection = parsedResponse
+				return parsedResponse;
+			})
+	}
 }
 
 export const getSingleSnack = (snackId) => {
