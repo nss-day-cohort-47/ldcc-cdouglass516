@@ -8,13 +8,14 @@ import { SnackDetails } from "./snacks/SnackDetails.js";
 import { Footer } from "./nav/Footer.js";
 import {
 	logoutUser, setLoggedInUser, loginUser, registerUser, getLoggedInUser,
-	getSnacks, getSingleSnack, getToppings
+	getSnacks, getSingleSnack, getToppings,addLDType
 } from "./data/apiManager.js";
+import {addType} from "./addType/addType.js"
 
 
-
+const footerElement =  document.querySelector(".footer_div");
 const applicationElement = document.querySelector("#ldsnacks");
-
+const navElement = document.getElementById("nav_div");
 //login/register listeners
 applicationElement.addEventListener("click", event => {
 	event.preventDefault();
@@ -72,7 +73,7 @@ applicationElement.addEventListener("click", event => {
 	}
 })
 
-document.getElementById("nav_div").addEventListener("change", event => {
+navElement.addEventListener("change", event => {
 	event.preventDefault();
 	if (event.target.id === "select_topping") {
 		var e = document.getElementById("select_topping");
@@ -81,10 +82,55 @@ document.getElementById("nav_div").addEventListener("change", event => {
 	}
 })
 
-applicationElement.addEventListener("click", event => {
+navElement.addEventListener("click", event => {
+	event.preventDefault();
+	if (event.target.id === "btn_addType") {
+		const listElement = document.querySelector("#mainContent");
+		listElement.innerHTML = addType();
+		document.getElementById("btn_addType").visible = false;
+	}
+})
+
+navElement.addEventListener("click", event => {
 	event.preventDefault();
 	if (event.target.id === "allSnacks") {
 		showSnackList();
+	}
+})
+
+applicationElement.addEventListener("click", event => {
+	event.preventDefault();
+	if (event.target.id === "btn_addNewType") {
+		var modal = document.getElementById("aModal");
+		var span = document.getElementsByClassName("close")[0];
+		modal.style.display = "block";
+		// When the user clicks on <span> (x), close the modal
+		span.onclick = function () {
+			modal.style.display = "none";
+		}
+
+		modal.addEventListener("click", event => {
+			event.preventDefault();
+			if (event.target.id === "postNewType") {
+				let response = addLDType(document.getElementById("typeName").value)
+				.then( returntxt =>{
+					console.log(response);
+				    modal.style.display = "none";
+					showSnackList();
+				})
+				
+
+			}})
+
+		// When the user clicks anywhere outside of the modal, close it
+		window.onclick = function (event) {
+			if (event.target == modal) {
+				modal.style.display = "none";
+			}
+		}
+		//set the modal HTML
+		const newName = document.getElementById("typeName").value
+		document.querySelector(".innerModal").innerHTML = `Save this name for new type: ${newName}`;
 	}
 })
 
@@ -152,7 +198,7 @@ const showSnackList = (toppingId) => {
 }
 
 const showFooter = () => {
-	applicationElement.innerHTML += Footer();
+	footerElement.innerHTML += Footer();
 }
 
 const startLDSnacks = (isAdmin) => {
