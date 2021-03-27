@@ -8,7 +8,7 @@ import { SnackDetails } from "./snacks/SnackDetails.js";
 import { Footer } from "./nav/Footer.js";
 import {
 	logoutUser, setLoggedInUser, loginUser, registerUser, getLoggedInUser,
-	getSnacks, getSingleSnack, getToppings,addLDType
+	getSnacks, getSingleSnack, getToppings,setAdmin, getAdmin
 } from "./data/apiManager.js";
 import {addType} from "./addType/addType.js"
 
@@ -29,7 +29,8 @@ applicationElement.addEventListener("click", event => {
 			.then(dbUserObj => {
 				if (dbUserObj) {
 					sessionStorage.setItem("user", JSON.stringify(dbUserObj));
-					startLDSnacks(dbUserObj.admin);
+					setAdmin(dbUserObj.admin);
+					startLDSnacks(getAdmin());
 				} else {
 					//got a false value - no user
 					const entryElement = document.querySelector(".entryForm");
@@ -46,7 +47,7 @@ applicationElement.addEventListener("click", event => {
 		registerUser(userObject)
 			.then(dbUserObj => {
 				sessionStorage.setItem("user", JSON.stringify(dbUserObj));
-				startLDSnacks(dbUserObj.admin);
+				startLDSnacks(getAdmin());
 			})
 	}
 })
@@ -147,7 +148,8 @@ const checkForUser = () => {
 		.then(dbUserObj => {
 			if (dbUserObj) {
 				sessionStorage.setItem("user", JSON.stringify(dbUserObj));
-				startLDSnacks(dbUserObj.admin);
+				setAdmin(dbUserObj.admin);
+				startLDSnacks(getAdmin(dbUserObj.isAdmin));
 			} else {
 				//got a false value - no user
 				const entryElement = document.querySelector(".entryForm");
