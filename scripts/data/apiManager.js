@@ -45,6 +45,26 @@ export const registerUser = (userObj) => {
 			return getLoggedInUser();
 		})
 }
+export const addLDType = (type) =>{
+	type = capitalize(type.toLowerCase());
+	
+	let payload = {name: type};
+	return fetch(`${apiURL}/types`, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json"
+		},
+		body: JSON.stringify(payload)
+	})
+		.then(response => response.json())
+		.then(parsedType => {
+			if(parsedType === payload){
+				return "success"
+			}else{
+				return parsedType;
+			}
+		});
+}
 
 export const getToppings = () =>{
 	return fetch(`${apiURL}/toppings`)
@@ -112,3 +132,7 @@ export const getSingleSnack = (snackId) => {
 			console.log('Request failed', error)
 		})
 }
+const capitalize = (s) => {
+	if (typeof s !== 'string') return ''
+	return s.charAt(0).toUpperCase() + s.slice(1)
+  }
