@@ -3,6 +3,7 @@ const apiURL = "http://localhost:8088";
 //// user functions
 let loggedInUser = {}
 let snackDetail = {}
+let isAdmin = false;
 
 export const getLoggedInUser = () => {
 	return { ...loggedInUser };
@@ -11,6 +12,14 @@ export const getLoggedInUser = () => {
 export const logoutUser = () => {
 	loggedInUser = {}
 }
+
+export const getAdmin = () =>{
+	return isAdmin;
+}
+
+export const setAdmin = (role) =>{
+    isAdmin = role;
+} 
 
 export const setLoggedInUser = (userObj) => {
 	loggedInUser = userObj;
