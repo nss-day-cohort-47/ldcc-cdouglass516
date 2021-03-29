@@ -1,0 +1,16 @@
+.adminMenu{
+    background-color: rgba(192, 212, 219, 0.699);
+    display:flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 3.5rem;
+    width:60%;
+}
+.link-button {
+    background: #7aeeaacb none repeat scroll 0 0;
+    border: 1px solid #aa8d56;
+    color: #3faee2;
+    outline: medium none;
+    padding: .2rem;
+    text-decoration: none;
+}
